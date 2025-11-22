@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #2a2a2a;
+  --color-dark: #212121;
+  --color-input: #262626;
+  --border-background: #ffffff1a;
+/* #19191c */
+}
+
+* {
+  color: whitesmoke
+}
+body {
+  height: 100vh;
+}
+input {
+  background-color: var(--color-input);
+}
+.border {
+  border-color: var(--border-background);
+  border-radius: 0.75rem;
+  border-width: 1px;
+}
+textarea:focus, input:focus{
+    outline: none;
+}
