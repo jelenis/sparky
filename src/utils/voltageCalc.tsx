@@ -4,7 +4,7 @@ import wireConstants ,{  correctionFactors } from "./wire.constants";
 
 type phaseType = 1 | 3;
 type voltageType = number
-type percentage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
 
 function generateK(
     voltageDrop: number,
@@ -20,7 +20,7 @@ function generateK(
 }
 
 export function getWireSize(
-    percentDrop: percentage, 
+    percentDrop: number, 
     voltage: voltageType, 
 
     current: number, 
