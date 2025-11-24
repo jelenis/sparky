@@ -7,10 +7,9 @@ import Card from "./Card";
 import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
 import { useSearchParams } from "react-router-dom";
-function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
+function RouteOverlay({ polyline, setPolyline, enabled }: {
   polyline: google.maps.Polyline | null;
   setPolyline: (polyline: google.maps.Polyline | null) => void;
-  onChange: (distance: number) => void;
   enabled: boolean;
 }) {
   const map = useMap();
@@ -19,6 +18,25 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
   // Parse path from URL
   const pathParam = searchParams.get("path");
   const pathFromUrl = pathParam ? JSON.parse(decodeURIComponent(pathParam)) : [];
+  
+  const updateUrlWithPath = useCallback((pathArray: google.maps.LatLngLiteral[], distance: number) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (pathArray.length === 0) {
+        next.delete("path");
+        next.set("length", "0.00");
+      } else {
+        next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
+        next.set("length", distance.toFixed(2));
+      }
+      return next;
+    });
+  }, [setSearchParams]);
+  
+  const getPathArray = (path: google.maps.MVCArray<google.maps.LatLng>) => {
+    return [...path.getArray()].map(latlng => ({ lat: latlng.lat(), lng: latlng.lng() }));
+  }
+
   // run once to create polyline, on map load
   useEffect(() => {
     if (!map) return;
@@ -35,7 +53,7 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
     setPolyline(pl);
 
     return () => pl.setMap(null);
-  }, [map, pathFromUrl]);
+  }, [map, pathFromUrl, setPolyline]);
 
   // Separate effect for setting up event listeners
   // sets the search params and distance on path change
@@ -45,17 +63,15 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
     if (!polyline || !map || !enabled) return;
     const path = polyline.getPath();
 
-
     const deletePathAndDistance = () => {
-      // Update URL
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        next.delete("path");
-        next.set("length", "0.00");
-        return next;
-      });
+      updateUrlWithPath([], 0);
     };
 
+    const updatePathAndDistance = () => {
+      const pathArray = getPathArray(path);
+      const distance = google.maps.geometry.spherical.computeLength(path);
+      updateUrlWithPath(pathArray, distance);
+    };
 
     const removeListener = path.addListener("remove_at", deletePathAndDistance);
     
@@ -63,17 +79,7 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
       if (!e.latLng) return;
       const path = polyline.getPath();
       path.push(e.latLng);  
-      // Update URL
-      setSearchParams(prev => {
-        console.log("Current prev:", prev.toString());
-        const next = new URLSearchParams(prev);
-        const pathArray = [...path.getArray()]
-          .map(latlng => ({ lat: latlng.lat(), lng: latlng.lng() }));
-        next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
-        next.set("length", google.maps.geometry.spherical.computeLength(path).toFixed(2));
-        console.log("Updated next:", next.toString());
-        return next;
-      });
+      updatePathAndDistance();
     });
 
     const rightClickListener = map.addListener("rightclick", () => {
@@ -95,7 +101,7 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
       map.getDiv().removeEventListener("keyup", escapeHandler);
       google.maps.event.removeListener(removeListener);
     };
-  }, [map, polyline, enabled, setSearchParams]);
+  }, [map, polyline, enabled, setSearchParams, updateUrlWithPath, getPathArray]);
 
   return null;
 }
@@ -123,18 +129,12 @@ function GeocodingComponent({ query }: { query: string }) {
   return null;
 }
 
-export default function MapComponent({enabled, onToggle, onChange, pathPoints}: 
+export default function MapComponent({enabled, onToggle}: 
   {
     enabled: boolean; 
     onToggle: () => void; 
-    onChange: (distance: number) => void;
-    pathPoints?: google.maps.LatLngLiteral[];
- 
   }) {
   const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
-  
-  const pathFromUrl = pathPoints || [];
-  
   const [searchQuery, setSearchQuery] = useState<string>("Toronto, ON");
 
   const clearPolyline = useCallback(() => {
@@ -211,7 +211,6 @@ export default function MapComponent({enabled, onToggle, onChange, pathPoints}:
           <RouteOverlay 
             polyline={polyline} 
             setPolyline={setPolyline} 
-            onChange={onChange} 
             enabled={enabled}
           />
           <GeocodingComponent query={searchQuery} />

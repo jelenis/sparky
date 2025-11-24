@@ -71,6 +71,10 @@ textarea:focus, input:focus{
 .card {
   transition: background-color 0.2s ease;
 }
+.card:has(:focus-within), .card:hover {
+  /* background-color: var(--color-dark); */
+  background-color: var(--color-selected);
+}
 .btn {
   background-color: var(--color-input);
   border-color: var(--border-background);

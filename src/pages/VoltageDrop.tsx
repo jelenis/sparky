@@ -161,12 +161,8 @@ export default function VoltageDrop(): JSX.Element {
         </div>
       </Card>
       <Map 
-        onChange={(distance: number) => {
-          updateSearchParams("length", distance.toFixed(2));
-        }} 
         onToggle={() => setEnabled(x => !x)} 
         enabled={enabled}
-        pathPoints={pathPoints}
       />
       <Card className="">
         <h3 className="text-xl font-bold mb-4">Results</h3>
