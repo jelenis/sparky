@@ -7,7 +7,7 @@ import Card from "../components/Card";
 import Map from "../components/Map.tsx";
 
 export default function VoltageDrop(): JSX.Element {
-  const [searchParams, setParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [enabled, setEnabled] =  useState<boolean>(true);
   const ampStr = searchParams.get("amps") ?? "";
   const voltStr = searchParams.get("volts") ?? "";
@@ -16,7 +16,6 @@ export default function VoltageDrop(): JSX.Element {
   const wiringMethodStr = searchParams.get("wiring_method") ?? "raceway";
   const materialStr = searchParams.get("material") ?? "copper";
   const percentageDropStr = searchParams.get("percentage_drop") ?? "5";
-
 
   let result: JSX.Element | null = null;
 
@@ -59,12 +58,13 @@ export default function VoltageDrop(): JSX.Element {
   }
 
   function updateSearchParams(param: string, value: string) {
-
-    const params = new URLSearchParams(searchParams);
-    params.set(param, value);
-
-    setParams(params);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set(param, value);
+      return next;
+    });
   }
+
 
   return (
     <main className="grid xl:grid-cols-2 lg:grid-cols-1 gap-4 p-8 shadow lg:justify-items-center max-w-[1500px] mx-auto">
@@ -154,9 +154,13 @@ export default function VoltageDrop(): JSX.Element {
           </div>
         </div>
       </Card>
-      <Map onChange={(distance: number) => {
-        updateSearchParams("length", distance.toFixed(2));
-      }} onToggle={() => setEnabled(x => !x)} enabled={enabled}/>
+      <Map 
+        onChange={(distance: number) => {
+          updateSearchParams("length", distance.toFixed(2));
+        }} 
+        onToggle={() => setEnabled(x => !x)} 
+        enabled={enabled}
+      />
       <Card className="">
         <h3 className="text-xl font-bold mb-4">Results</h3>
         {result}

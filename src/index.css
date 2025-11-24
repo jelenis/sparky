@@ -13,6 +13,9 @@
   --color-selected: #211f1e;
 /* #19191c */
 }
+::placeholder {
+  opacity: 0.3; /* Ensures full opacity, addressing Firefox's default lower opacity */
+}
 
 body {
 

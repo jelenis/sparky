@@ -1,4 +1,3 @@
-
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { useEffect, useState, useCallback } from "react";
 import { CiSearch } from "react-icons/ci";
@@ -7,71 +6,103 @@ import { useMap } from "@vis.gl/react-google-maps";
 import Card from "./Card";
 import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
-
-function RouteOverlay({ polyline, setPolyline, onChange }: {
+import { useSearchParams } from "react-router-dom";
+function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
   polyline: google.maps.Polyline | null;
   setPolyline: (polyline: google.maps.Polyline | null) => void;
   onChange: (distance: number) => void;
+  enabled: boolean;
 }) {
   const map = useMap();
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Parse path from URL
+  const pathParam = searchParams.get("path");
+  const pathFromUrl = pathParam ? JSON.parse(decodeURIComponent(pathParam)) : [];
 
   // run once to create polyline, on map load
   useEffect(() => {
-    if (!map) return;
+    if (!map || !enabled) return;
 
     // Create editable polyline
     const pl = new google.maps.Polyline({
       map,
-      path: [],
+      path: pathFromUrl,
       editable: true,
       strokeColor: "#4285F4",
       strokeWeight: 4,
-
     });
 
     setPolyline(pl);
-    const path = pl.getPath();
-      // When a point is moved 
-      path.addListener("set_at", () => {
-        const meters = google.maps.geometry?.spherical.computeLength(pl.getPath());
-        if (!meters) return;
-        onChange(meters);
-
-      });
-
-      // New point added
-      path.addListener("insert_at", () => {
-      const meters = google.maps.geometry?.spherical.computeLength(pl.getPath());
-      if (!meters) return;
-      onChange(meters);
-
-      });
-
-      // Point removed
-      path.addListener("remove_at", (index: number) => {
-
-        if (index === 0) {
-          onChange(0);
-        }
-  
-      });
-
-
 
     return () => pl.setMap(null);
-  }, [map]);
+  }, [map, pathFromUrl]);
+
+  // Separate effect for setting up event listeners
+  useEffect(() => {
+    if (!map || !polyline || !enabled) return;
+
+    const path = polyline.getPath();
+    
+    // Calculate initial distance if path exists
+    if (path.getLength() > 0) {
+      const meters = google.maps.geometry?.spherical.computeLength(path);
+      if (meters) onChange(meters);
+    }
+
+    const updatePathAndDistance = () => {
+      const pathArray = path.getArray().map(latLng => ({
+        lat: latLng.lat(),
+        lng: latLng.lng()
+      }));
+      
+      // Update URL
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        if (pathArray.length === 0) {
+          next.delete("path");
+        } else {
+          next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
+        }
+        return next;
+      });
+      
+      // Update distance
+      const meters = google.maps.geometry?.spherical.computeLength(path);
+      onChange(meters || 0);
+    };
+
+    // Event listeners for path changes
+    const setListener = path.addListener("set_at", updatePathAndDistance);
+    const insertListener = path.addListener("insert_at", updatePathAndDistance);
+    const removeListener = path.addListener("remove_at", updatePathAndDistance);
+
+    return () => {
+      google.maps.event.removeListener(removeListener);
+    };
+  }, [polyline, onChange]);
 
  
   // Add points on click
   useEffect(() => {
-    if (!map || !polyline) return;
-
+    if (!map || !polyline || !enabled) return;
     const listener = map.addListener("click", (e: google.maps.MapMouseEvent) => {
       if (!e.latLng) return;
       const path = polyline.getPath();
       path.push(e.latLng);  // add latitude and longitude
 
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        const pathArray = path.getArray().map(latlng => ({ 
+          lat: latlng.lat(), 
+          lng: latlng.lng() 
+        }));
+        
+        next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
+        next.set("length", String(google.maps.geometry?.spherical.computeLength(path) || 0));
+        return next; 
+      });
+      console.log(google.maps.geometry?.spherical.computeLength(path))
 
     });
 
@@ -112,9 +143,9 @@ function GeocodingComponent({ query }: { query: string }) {
         const location = results[0].geometry.location;
         map.setCenter(location);
         map.setZoom(18);
-        console.log('Geocoding results:', results);
+        
       } else {
-        console.warn('Geocoding failed:', status);
+        
       }
     });
   }, [geocodingLib, map, query]);
@@ -122,21 +153,25 @@ function GeocodingComponent({ query }: { query: string }) {
   return null;
 }
 
-export default function MapComponent({enabled,onToggle, onChange}: 
+export default function MapComponent({enabled, onToggle, onChange, pathPoints}: 
   {
     enabled: boolean; 
     onToggle: () => void; 
-    onChange: (distance: number) => void}) {
+    onChange: (distance: number) => void;
+    pathPoints?: google.maps.LatLngLiteral[];
+ 
+  }) {
   const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
   
-
+  const pathFromUrl = pathPoints || [];
+  
   const [searchQuery, setSearchQuery] = useState<string>("Toronto, ON");
 
-  const clearPolyline = () => {
+  const clearPolyline = useCallback(() => {
     if (polyline) {
       polyline.getPath().clear();
     }
-  };
+  }, [polyline]);
 
   const handleAction = useCallback((formData: FormData) => {
     const queryValue = formData.get("query") as string;
@@ -168,7 +203,7 @@ export default function MapComponent({enabled,onToggle, onChange}:
         <div>
           
         
-        <label className="input label md:max-w-[15rem] sm:max-w-[10rem] " htmlFor="query">
+        <label className="input label md:max-w-60 sm:max-w-40" htmlFor="query">
           <span className="label left"><CiSearch/></span>
           <input disabled={!enabled} name="query" className="input" placeholder="Enter a location" defaultValue={searchQuery} />
         </label>
@@ -196,14 +231,19 @@ export default function MapComponent({enabled,onToggle, onChange}:
             <button
               onClick={clearPolyline}
               id="clear-polyline-button"
-              className="bg-white  text-input h-12 w-auto flex items-center justify-center btn rounded shadow text-blue-100 mb-10"
+              className="bg-white text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
               style={{ color: "black", }}
             >
             <FaTrash className=" text-input"/>
             Clear Points
             </button>
           </MapControl>
-          <RouteOverlay polyline={polyline} setPolyline={setPolyline} onChange={onChange} />
+          <RouteOverlay 
+            polyline={polyline} 
+            setPolyline={setPolyline} 
+            onChange={onChange} 
+            enabled={enabled}
+          />
           <GeocodingComponent query={searchQuery} />
         </Map>
         </div>
