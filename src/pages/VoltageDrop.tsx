@@ -16,11 +16,6 @@ export default function VoltageDrop(): JSX.Element {
   const wiringMethodStr = searchParams.get("wiring_method") ?? "raceway";
   const materialStr = searchParams.get("material") ?? "copper";
   const percentageDropStr = searchParams.get("percentage_drop") ?? "5";
-  
-  // Parse path from URL
-  const pathParam = searchParams.get("path");
-  const pathPoints: google.maps.LatLngLiteral[] = pathParam ? 
-    JSON.parse(decodeURIComponent(pathParam)) : [];
 
 
   let result: JSX.Element | null = null;
@@ -63,10 +58,15 @@ export default function VoltageDrop(): JSX.Element {
     }
   }
 
+  
   function updateSearchParams(param: string, value: string) {
+  
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
-        next.set(param, value);
+        if (value === "") 
+          next.delete(param);
+        else
+          next.set(param, value);
         return next;
       });
   }
@@ -107,7 +107,18 @@ export default function VoltageDrop(): JSX.Element {
               <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
                 <input disabled={enabled} autoComplete="off" name="length" value={lengthStr}
                   placeholder="100"
-                  onChange={e => updateSearchParams("length", e.target.value)} />
+                  onChange={e => {
+                    setSearchParams(prev => {
+                      const next = new URLSearchParams(prev);
+                      next.delete("path");
+                      if (e.target.value === "") {
+                        next.delete("length");
+                      } else {
+                        next.set("length", e.target.value);
+                      }
+                      return next;
+                    });
+                  }} />
                 <span className="label">Meters</span>
               </label>
 

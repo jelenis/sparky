@@ -1,5 +1,5 @@
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { useMap } from "@vis.gl/react-google-maps";
@@ -7,10 +7,9 @@ import Card from "./Card";
 import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
 import { useSearchParams } from "react-router-dom";
-function RouteOverlay({ polyline, setPolyline, enabled }: {
+function RouteOverlay({ polyline, setPolyline}: {
   polyline: google.maps.Polyline | null;
   setPolyline: (polyline: google.maps.Polyline | null) => void;
-  enabled: boolean;
 }) {
   const map = useMap();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,7 +18,11 @@ function RouteOverlay({ polyline, setPolyline, enabled }: {
   const pathParam = searchParams.get("path");
   const pathFromUrl = pathParam ? JSON.parse(decodeURIComponent(pathParam)) : [];
   
-  const updateUrlWithPath = useCallback((pathArray: google.maps.LatLngLiteral[], distance: number) => {
+  // mount and revalidate the distance from the path 
+  
+
+
+  const updateUrlWithPath = (pathArray: google.maps.LatLngLiteral[], distance: number) => {
     setSearchParams(prev => {
       const next = new URLSearchParams(prev);
       if (pathArray.length === 0) {
@@ -31,7 +34,7 @@ function RouteOverlay({ polyline, setPolyline, enabled }: {
       }
       return next;
     });
-  }, [setSearchParams]);
+  };
   
   const getPathArray = (path: google.maps.MVCArray<google.maps.LatLng>) => {
     return [...path.getArray()].map(latlng => ({ lat: latlng.lat(), lng: latlng.lng() }));
@@ -53,14 +56,14 @@ function RouteOverlay({ polyline, setPolyline, enabled }: {
     setPolyline(pl);
 
     return () => pl.setMap(null);
-  }, [map, pathFromUrl, setPolyline]);
+  }, [map, pathFromUrl, setPolyline,]);
 
   // Separate effect for setting up event listeners
   // sets the search params and distance on path change
   // should not run if the map is disabled since it will over-write 
   // the path distance over the user input
   useEffect(() => {
-    if (!polyline || !map || !enabled) return;
+    if (!polyline || !map) return;
     const path = polyline.getPath();
 
     const deletePathAndDistance = () => {
@@ -101,7 +104,8 @@ function RouteOverlay({ polyline, setPolyline, enabled }: {
       map.getDiv().removeEventListener("keyup", escapeHandler);
       google.maps.event.removeListener(removeListener);
     };
-  }, [map, polyline, enabled, setSearchParams, updateUrlWithPath, getPathArray]);
+  }, [map, polyline, setSearchParams, updateUrlWithPath, getPathArray]);
+
 
   return null;
 }
@@ -208,11 +212,10 @@ export default function MapComponent({enabled, onToggle}:
             Clear Points
             </button>
           </MapControl>
-          <RouteOverlay 
+         {enabled && <RouteOverlay 
             polyline={polyline} 
             setPolyline={setPolyline} 
-            enabled={enabled}
-          />
+          />}
           <GeocodingComponent query={searchQuery} />
         </Map>
         </div>
