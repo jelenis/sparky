@@ -61,6 +61,7 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
         const next = new URLSearchParams(prev);
         if (pathArray.length === 0) {
           next.delete("path");
+          
         } else {
           next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
         }
@@ -72,13 +73,25 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
       onChange(meters || 0);
     };
 
+    const deletePathAndDistance = () => {
+      // Update URL
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.delete("path");
+        next.delete("length");
+        return next;
+      });
+    };
+
     // Event listeners for path changes
     const setListener = path.addListener("set_at", updatePathAndDistance);
     const insertListener = path.addListener("insert_at", updatePathAndDistance);
-    const removeListener = path.addListener("remove_at", updatePathAndDistance);
+    const removeListener = path.addListener("remove_at", deletePathAndDistance);
 
     return () => {
       google.maps.event.removeListener(removeListener);
+      google.maps.event.removeListener(insertListener);
+      google.maps.event.removeListener(setListener);
     };
   }, [polyline, onChange]);
 
@@ -109,7 +122,6 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
     const rightClickListener = map.addListener("rightclick", () => {
       if (!polyline) return;
       polyline.getPath().clear();
-      
     });
 
     map.getDiv().addEventListener("keyup", escapeHandler);
