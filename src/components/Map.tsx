@@ -156,7 +156,17 @@ export default function MapComponent({enabled, onToggle}:
 
   }, []);
 
-  const disabledOptions = enabled ? {} : {
+
+  // you have to manually enable/disable map options
+  // since it remebers its state even
+  const options = enabled ? {
+    draggable: true,
+    zoomControl: true,
+    scrollwheel: true,
+    disableDoubleClickZoom: false,
+    disableDefaultUI: false,
+
+  } : {
     draggable: false,
     zoomControl: false,
     scrollwheel: false,
@@ -197,8 +207,8 @@ export default function MapComponent({enabled, onToggle}:
           clickableIcons={false}
           mapTypeId="satellite"
           gestureHandling="greedy"
-          disableDefaultUI={false}
-          {...disabledOptions}
+       
+          {...options}
 
         >
           <MapControl position={ControlPosition.BOTTOM_CENTER}>
