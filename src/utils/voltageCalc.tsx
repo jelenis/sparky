@@ -34,9 +34,9 @@ export function getWireSize(
 
     const kvalues  = Object.entries(wireConstants[material][method]);
     const sortedKValues = kvalues.sort((a,b) => b[1] - a[1]);
-    console.log("sortedKValues", sortedKValues);
+
     const wiresize = sortedKValues.find(([_, k]) => k <= maxKFactor);
-    console.log("kFactor", maxKFactor, wiresize);
+
 
     return wiresize ? {size: wiresize[0], kFactor: wiresize[1]} : null;
 

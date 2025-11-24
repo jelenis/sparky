@@ -16,6 +16,12 @@ export default function VoltageDrop(): JSX.Element {
   const wiringMethodStr = searchParams.get("wiring_method") ?? "raceway";
   const materialStr = searchParams.get("material") ?? "copper";
   const percentageDropStr = searchParams.get("percentage_drop") ?? "5";
+  
+  // Parse path from URL
+  const pathParam = searchParams.get("path");
+  const pathPoints: google.maps.LatLngLiteral[] = pathParam ? 
+    JSON.parse(decodeURIComponent(pathParam)) : [];
+
 
   let result: JSX.Element | null = null;
 
@@ -44,8 +50,8 @@ export default function VoltageDrop(): JSX.Element {
     const res = getWireSize(percentageDrop, volts, amps, length, phaseStr == "1" ? 1 : 3, wiringMethod, material);
     if (res) {
       const { size, kFactor } = res;
-      console.log("wireSize", size);
-      console.log("voltageDropFromK", voltageDropFromK(kFactor, amps, length, phase));
+      // console.log("wireSize", size);
+      // console.log("voltageDropFromK", voltageDropFromK(kFactor, amps, length, phase));
       voltageOutput = voltageDropFromK(kFactor, amps, length, phase);
       wireSizeOutput = size;
 
@@ -58,11 +64,11 @@ export default function VoltageDrop(): JSX.Element {
   }
 
   function updateSearchParams(param: string, value: string) {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set(param, value);
-      return next;
-    });
+      setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+        next.set(param, value);
+        return next;
+      });
   }
 
 
@@ -160,6 +166,7 @@ export default function VoltageDrop(): JSX.Element {
         }} 
         onToggle={() => setEnabled(x => !x)} 
         enabled={enabled}
+        pathPoints={pathPoints}
       />
       <Card className="">
         <h3 className="text-xl font-bold mb-4">Results</h3>

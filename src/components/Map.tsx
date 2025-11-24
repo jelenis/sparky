@@ -19,10 +19,9 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
   // Parse path from URL
   const pathParam = searchParams.get("path");
   const pathFromUrl = pathParam ? JSON.parse(decodeURIComponent(pathParam)) : [];
-
   // run once to create polyline, on map load
   useEffect(() => {
-    if (!map || !enabled) return;
+    if (!map) return;
 
     // Create editable polyline
     const pl = new google.maps.Polyline({
@@ -39,84 +38,42 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
   }, [map, pathFromUrl]);
 
   // Separate effect for setting up event listeners
+  // sets the search params and distance on path change
+  // should not run if the map is disabled since it will over-write 
+  // the path distance over the user input
   useEffect(() => {
-    if (!map || !polyline || !enabled) return;
-
+    if (!polyline || !map || !enabled) return;
     const path = polyline.getPath();
-    
-    // Calculate initial distance if path exists
-    if (path.getLength() > 0) {
-      const meters = google.maps.geometry?.spherical.computeLength(path);
-      if (meters) onChange(meters);
-    }
 
-    const updatePathAndDistance = () => {
-      const pathArray = path.getArray().map(latLng => ({
-        lat: latLng.lat(),
-        lng: latLng.lng()
-      }));
-      
-      // Update URL
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        if (pathArray.length === 0) {
-          next.delete("path");
-          
-        } else {
-          next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
-        }
-        return next;
-      });
-      
-      // Update distance
-      const meters = google.maps.geometry?.spherical.computeLength(path);
-      onChange(meters || 0);
-    };
 
     const deletePathAndDistance = () => {
       // Update URL
       setSearchParams(prev => {
         const next = new URLSearchParams(prev);
         next.delete("path");
-        next.delete("length");
+        next.set("length", "0.00");
         return next;
       });
     };
 
-    // Event listeners for path changes
-    const setListener = path.addListener("set_at", updatePathAndDistance);
-    const insertListener = path.addListener("insert_at", updatePathAndDistance);
+
     const removeListener = path.addListener("remove_at", deletePathAndDistance);
-
-    return () => {
-      google.maps.event.removeListener(removeListener);
-      google.maps.event.removeListener(insertListener);
-      google.maps.event.removeListener(setListener);
-    };
-  }, [polyline, onChange]);
-
- 
-  // Add points on click
-  useEffect(() => {
-    if (!map || !polyline || !enabled) return;
+    
     const listener = map.addListener("click", (e: google.maps.MapMouseEvent) => {
       if (!e.latLng) return;
       const path = polyline.getPath();
-      path.push(e.latLng);  // add latitude and longitude
-
+      path.push(e.latLng);  
+      // Update URL
       setSearchParams(prev => {
+        console.log("Current prev:", prev.toString());
         const next = new URLSearchParams(prev);
-        const pathArray = path.getArray().map(latlng => ({ 
-          lat: latlng.lat(), 
-          lng: latlng.lng() 
-        }));
-        
+        const pathArray = [...path.getArray()]
+          .map(latlng => ({ lat: latlng.lat(), lng: latlng.lng() }));
         next.set("path", encodeURIComponent(JSON.stringify(pathArray)));
-        next.set("length", String(google.maps.geometry?.spherical.computeLength(path) || 0));
-        return next; 
+        next.set("length", google.maps.geometry.spherical.computeLength(path).toFixed(2));
+        console.log("Updated next:", next.toString());
+        return next;
       });
-      console.log(google.maps.geometry?.spherical.computeLength(path))
-
     });
 
     const rightClickListener = map.addListener("rightclick", () => {
@@ -136,8 +93,9 @@ function RouteOverlay({ polyline, setPolyline, onChange, enabled }: {
       listener.remove();
       rightClickListener.remove();
       map.getDiv().removeEventListener("keyup", escapeHandler);
+      google.maps.event.removeListener(removeListener);
     };
-  }, [map, polyline]);
+  }, [map, polyline, enabled, setSearchParams]);
 
   return null;
 }
