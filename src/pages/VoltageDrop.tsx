@@ -15,7 +15,7 @@ export default function VoltageDrop(): JSX.Element {
   const phaseStr = searchParams.get("phase") ?? "1";
   const wiringMethodStr = searchParams.get("wiring_method") ?? "raceway";
   const materialStr = searchParams.get("material") ?? "copper";
-  const percentageDropStr = searchParams.get("percentage_drop") ?? "5";
+  const percentageDropStr = searchParams.get("percentage_drop") ?? "";
 
 
   let result: JSX.Element | null = null;
