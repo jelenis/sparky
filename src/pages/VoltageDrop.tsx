@@ -111,11 +111,7 @@ export default function VoltageDrop(): JSX.Element {
                     setSearchParams(prev => {
                       const next = new URLSearchParams(prev);
                       next.delete("path");
-                      if (e.target.value === "") {
-                        next.delete("length");
-                      } else {
-                        next.set("length", e.target.value);
-                      }
+                      next.set("length", e.target.value);
                       return next;
                     });
                   }} />
