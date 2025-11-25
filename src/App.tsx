@@ -9,7 +9,6 @@ function App() {
     <Routes>
       <Route element={<Header/>}>
         <Route path='/' element={<VoltageDrop />} />
-
       </Route>
     </Routes>
   )

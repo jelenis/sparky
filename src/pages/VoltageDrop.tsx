@@ -73,8 +73,7 @@ export default function VoltageDrop(): JSX.Element {
 
 
   return (
-    <main className="grid xl:grid-cols-2 lg:grid-cols-1 gap-4 p-8 shadow lg:justify-items-center max-w-[1500px] mx-auto">
-    
+    <main className="grid xl:grid-cols-2 lg:grid-cols-1 gap-4 p-8 lg:justify-items-center max-w-[1500px] mx-auto">
       <Card className="">
         <div className="max-w-[650px] ">
 
@@ -171,7 +170,7 @@ export default function VoltageDrop(): JSX.Element {
         onToggle={() => setEnabled(x => !x)} 
         enabled={enabled}
       />
-      <Card className="">
+      <Card className="col-span-full results-card xl:max-w-none">
         <h3 className="text-xl font-bold mb-4">Results</h3>
         {result}
       </Card>

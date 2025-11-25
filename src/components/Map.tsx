@@ -7,19 +7,19 @@ import Card from "./Card";
 import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
 import { useSearchParams } from "react-router-dom";
-function RouteOverlay({ polyline, setPolyline}: {
+function RouteOverlay({ polyline, setPolyline }: {
   polyline: google.maps.Polyline | null;
-  setPolyline: (polyline: google.maps.Polyline | null) => void;
+  setPolyline: (polyline: google.maps.Polyline | null) => void; 
 }) {
   const map = useMap();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   // Parse path from URL
   const pathParam = searchParams.get("path");
   const pathFromUrl = pathParam ? JSON.parse(decodeURIComponent(pathParam)) : [];
-  
+
   // mount and revalidate the distance from the path 
-  
+
 
 
   const updateUrlWithPath = (pathArray: google.maps.LatLngLiteral[], distance: number) => {
@@ -35,7 +35,7 @@ function RouteOverlay({ polyline, setPolyline}: {
       return next;
     });
   };
-  
+
   const getPathArray = (path: google.maps.MVCArray<google.maps.LatLng>) => {
     return [...path.getArray()].map(latlng => ({ lat: latlng.lat(), lng: latlng.lng() }));
   }
@@ -77,11 +77,11 @@ function RouteOverlay({ polyline, setPolyline}: {
     };
 
     const removeListener = path.addListener("remove_at", deletePathAndDistance);
-    
+
     const listener = map.addListener("click", (e: google.maps.MapMouseEvent) => {
       if (!e.latLng) return;
       const path = polyline.getPath();
-      path.push(e.latLng);  
+      path.push(e.latLng);
       updatePathAndDistance();
     });
 
@@ -123,9 +123,9 @@ function GeocodingComponent({ query }: { query: string }) {
         const location = results[0].geometry.location;
         map.setCenter(location);
         map.setZoom(18);
-        
+
       } else {
-        
+
       }
     });
   }, [geocodingLib, map, query]);
@@ -133,10 +133,10 @@ function GeocodingComponent({ query }: { query: string }) {
   return null;
 }
 
-export default function MapComponent({enabled, onToggle}: 
+export default function MapComponent({ enabled, onToggle }:
   {
-    enabled: boolean; 
-    onToggle: () => void; 
+    enabled: boolean;
+    onToggle: () => void;
   }) {
   const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("Toronto, ON");
@@ -175,62 +175,62 @@ export default function MapComponent({enabled, onToggle}:
   };
 
   return (
-    <Card  style={{ width: "100%", height: "100%", }}>
+    <Card style={{ width: "100%", height: "100%", }}>
       <div className="flex flex-col h-full">
-      <form action={handleAction}  className="mb-8 flex justify-between" >
-        <div>
-          <label className="label mt-2 ">
-            <input  type="checkbox"  className="toggle toggle-success" onChange={onToggle} checked={enabled}/>
-            Use Map For Length
-          </label>
-        </div>
-        <div>
-          
-        
-        <label className="input label md:max-w-60 sm:max-w-40" htmlFor="query">
-          <span className="label left"><CiSearch/></span>
-          <input disabled={!enabled} name="query" className="input" placeholder="Enter a location" defaultValue={searchQuery} />
-        </label>
-          <button  disabled={!enabled} type="submit" className="btn ml-2">Search</button>
+        <form action={handleAction} className="mb-8 sm:flex justify-between" >
+          <div className="mb-5 sm:mb-0">
+            <label className="label mt-2 ">
+              <input type="checkbox" className="toggle toggle-success" onChange={onToggle} checked={enabled} />
+              Use Map For Length
+            </label>
           </div>
-      </form>
-      <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}>
-        <div  
-        className={clsx("w-full min-h-[300px] sm:w-[400px] md:mx-auto md:w-[90%] md:h-[400px] overflow-hidden rounded-xl", {
-          "opacity-20 pointer-events-none": !enabled
-        })}>
-        <Map
-      
-          style={{ width: "100%", height: "100%"  }}
-          defaultCenter={{ lat: 43.6532, lng: -79.3832 }}
-          defaultZoom={18}
-          clickableIcons={false}
-          mapTypeId="satellite"
-          gestureHandling="greedy"
-       
-          {...options}
+          <div className="flex justify-between">
+            <label className="input label sm:max-w-60 max-w-1/2" htmlFor="query">
+              <span className="label left"><CiSearch /></span>
+              <input disabled={!enabled} name="query" className="input" placeholder="Enter a location" defaultValue={searchQuery} />
+            </label>
+            <button disabled={!enabled} type="submit" className="btn ml-2">Search</button>
+          </div>
+        </form>
+        <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}>
+          <div
+            className={
+              clsx("w-full min-h-[300px]  md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl", 
+              {
+              "opacity-20 pointer-events-none": !enabled
+            })}>
+            <Map
 
-        >
-          <MapControl position={ControlPosition.BOTTOM_CENTER}>
-            <button
-              onClick={clearPolyline}
-              id="clear-polyline-button"
-              className="bg-white text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
-              style={{ color: "black", }}
+              style={{ width: "100%", height: "100%" }}
+              defaultCenter={{ lat: 43.6532, lng: -79.3832 }}
+              defaultZoom={18}
+              clickableIcons={false}
+              mapTypeId="satellite"
+              gestureHandling="greedy"
+
+              {...options}
+
             >
-            <FaTrash className=" text-input"/>
-            Clear Points
-            </button>
-          </MapControl>
-         {enabled && <RouteOverlay 
-            polyline={polyline} 
-            setPolyline={setPolyline} 
-          />}
-          <GeocodingComponent query={searchQuery} />
-        </Map>
-        </div>
-      </APIProvider>
-       </div>
+              <MapControl position={ControlPosition.BOTTOM_CENTER}>
+                <button
+                  onClick={clearPolyline}
+                  id="clear-polyline-button"
+                  className="bg-white text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
+                  style={{ color: "black", }}
+                >
+                  <FaTrash className=" text-input" />
+                  Clear Points
+                </button>
+              </MapControl>
+              {enabled && <RouteOverlay
+                polyline={polyline}
+                setPolyline={setPolyline}
+              />}
+              <GeocodingComponent query={searchQuery} />
+            </Map>
+          </div>
+        </APIProvider>
+      </div>
     </Card>
   );
 }
