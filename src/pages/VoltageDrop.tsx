@@ -63,7 +63,7 @@ export default function VoltageDrop(): JSX.Element {
             <div >
               <h4 className="pb-2">Supply Voltage</h4>
               <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="" autoComplete="off" name="volts" value={voltStr}
+                <input className="w-full" autoComplete="off" name="volts" value={voltStr}
                   placeholder="600"
                   onChange={e => updateSearchParams("volts", e.target.value)} />
                 <span className="label">Volts</span>
@@ -73,7 +73,7 @@ export default function VoltageDrop(): JSX.Element {
 
               <h4 className="pb-2">Load Current</h4>
               <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="" autoComplete="off" name="current" value={ampStr}
+                <input className="w-full"autoComplete="off" name="current" value={ampStr}
                   placeholder="20"
                   onChange={e => updateSearchParams("amps", e.target.value)} />
                   <span className="label">Amps</span>
@@ -84,7 +84,7 @@ export default function VoltageDrop(): JSX.Element {
             <div>
               <h4 className="pb-2">Length</h4>
               <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input disabled={enabled} autoComplete="off" name="length" value={lengthStr}
+                <input className="w-full" disabled={enabled} autoComplete="off" name="length" value={lengthStr}
                   placeholder="100"
                   onChange={e => {
                     setSearchParams(prev => {
@@ -104,7 +104,7 @@ export default function VoltageDrop(): JSX.Element {
 
               <h4 className="pb-2">Voltage Drop</h4>
               <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="" autoComplete="off" name="percentage-drop"
+                <input className="w-full" autoComplete="off" name="percentage-drop"
                   placeholder="5"
                   value={percentageDropStr} onChange={e => updateSearchParams("percentage_drop", e.target.value)} />
                
@@ -130,7 +130,7 @@ export default function VoltageDrop(): JSX.Element {
               <select id="material" defaultValue={materialStr}
                 className={"select  select-ghost focus:border-0 hover:border-0 bg-input min-w-[140px] "}
                 onChange={(e) => updateSearchParams("material", e.target.value)}>
-                <option className="hover:bg-input" value="raceway">Raceway</option>
+                <option className="hover:bg-input" value="copper">Copper</option>
                 <option className="hover:bg-input" value="aluminum">Aluminum</option>
               </select>
             </div>
