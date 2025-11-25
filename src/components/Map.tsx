@@ -153,14 +153,14 @@ export default function MapComponent({ enabled, onToggle }:
     }
   }, [polyline]);
 
-  const handleAction = useCallback((formData: FormData) => {
+  const handleAction = (formData: FormData) => {
+    console.log(enabled);
     const queryValue = formData.get("query") as string;
     const trimmedQuery = queryValue.trim();
     if (trimmedQuery) {
       setSearchQuery(trimmedQuery);
     }
-
-  }, []);
+  };
 
 
 
@@ -180,14 +180,14 @@ export default function MapComponent({ enabled, onToggle }:
         <form action={handleAction} className="mb-8 sm:flex justify-between" >
           <div className="mb-5 sm:mb-0">
             <label className="label mt-2 ">
-              <input type="checkbox" className="toggle toggle-success" onChange={onToggle} checked={enabled} />
+              <input type="checkbox" name="checkbox" defaultChecked={enabled} className="toggle toggle-success" onChange={onToggle}  />
               Use Map For Length
             </label>
           </div>
           <div className="flex justify-between">
-            <label className="input label sm:max-w-60 max-w-1/2" htmlFor="query">
+            <label className="input label sm:max-w-60 max-w-3/4" htmlFor="query">
               <span className="label left"><CiSearch /></span>
-              <input disabled={!enabled} name="query" className="input" placeholder="Enter a location" defaultValue={searchQuery} />
+              <input disabled={!enabled} name="query" className="input" placeholder="Toronto, ON"  />
             </label>
             <button disabled={!enabled} type="submit" className="btn ml-2">Search</button>
           </div>
