@@ -19,7 +19,7 @@
 
 body {
 
-  color: whitesmoke;
+  color: var(--neutral-content);
   
 }
 :root {
@@ -40,11 +40,8 @@ option:hover {
   background-color: var(--color-light);
 
 }
-h1,h2 {
-  font-weight: 500;
-}
+
 h3 {
-  font-weight: 300;
 }
 
 body {
@@ -83,5 +80,5 @@ textarea:focus, input:focus{
   background-color: white;
 }
 #clear-polyline-button {
-  background-color: whitesmoke;
+  background-color: white;
 }

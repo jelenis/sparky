@@ -1,14 +1,14 @@
 import type { JSX } from "react";
-import { useState } from "react";
-import { getWireSize, voltageDropFromK } from "../utils/voltageCalc";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Card from "../components/Card";
 
+import Card from "../components/Card";
+import Results from "../components/Results";
 import Map from "../components/Map.tsx";
 
 export default function VoltageDrop(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [enabled, setEnabled] =  useState<boolean>(true);
+  const [enabled, setEnabled] =  useState<boolean>(false);
   const ampStr = searchParams.get("amps") ?? "";
   const voltStr = searchParams.get("volts") ?? "";
   const lengthStr = searchParams.get("length") ?? "";
@@ -18,45 +18,26 @@ export default function VoltageDrop(): JSX.Element {
   const percentageDropStr = searchParams.get("percentage_drop") ?? "";
 
 
-  let result: JSX.Element | null = null;
 
-
-  // sanitize inputs
+  // sanitize inputs, if invalid set to NaN
   const amps = ampStr.trim() ? Number(ampStr) : NaN;
   const volts = voltStr.trim() ? Number(voltStr) : NaN;
   const length = lengthStr.trim() ? Number(lengthStr) : NaN;
+  const percentageDrop = percentageDropStr.trim() ? Number(percentageDropStr) : NaN;
+
+  // set typed enums / values
   const phase = phaseStr.trim() === "3" ? 3 : 1;
   const wiringMethod = wiringMethodStr === "cable" ? "cable" : "raceway";
   const material = materialStr === "aluminum" ? "aluminum" : "copper";
-  const percentageDrop = percentageDropStr.trim() ? Number(percentageDropStr) : NaN;
 
-  let voltageOutput: number = 0;
-  let wireSizeOutput: string = "";
-  function isComputable(): boolean {
-    return !isNaN(amps) && !isNaN(volts) && !isNaN(length) && length > 0 && percentageDrop > 0;
-  }
-  const computable = isComputable();
-
-  // only render the result if all inputs are valid
-  // TODO: improve user feedback for invalid inputs
-  // and implment with zod schema
-  if (computable) {
-
-    const res = getWireSize(percentageDrop, volts, amps, length, phaseStr == "1" ? 1 : 3, wiringMethod, material);
-    if (res) {
-      const { size, kFactor } = res;
-      // console.log("wireSize", size);
-      // console.log("voltageDropFromK", voltageDropFromK(kFactor, amps, length, phase));
-      voltageOutput = voltageDropFromK(kFactor, amps, length, phase);
-      wireSizeOutput = size;
-
-      result = (<div>
-        <p>Voltage Drop: {`${voltageOutput.toFixed(2)} V ${(voltageOutput / volts * 100).toFixed(2)} %`}</p>
-        <p>Wire Size: {wireSizeOutput}</p>
-      </div>
-      );
-    }
-  }
+  // set defaults if not present when the cmoponent mounts
+  useEffect(() => {
+    return; // disable auto defaults for now
+    isNaN(volts) && updateSearchParams("volts", "120");
+    isNaN(amps) && updateSearchParams("amps", "20");
+    isNaN(length) && updateSearchParams("length", "100");
+    isNaN(percentageDrop) && updateSearchParams("percentage_drop", "5");
+  }, []);
 
   
   function updateSearchParams(param: string, value: string) {
@@ -75,9 +56,8 @@ export default function VoltageDrop(): JSX.Element {
   return (
     <main className="grid xl:grid-cols-2 lg:grid-cols-1 gap-4 p-8 lg:justify-items-center max-w-[1500px] mx-auto">
       <Card className="">
-        <div className="max-w-[650px] ">
-
-          <h3 className="text-2xl font-bold mb-4 ">Voltage Drop Calculator</h3>
+        <div className="max-w-[600px] ">
+          <h3 className="text-2xl font-bold mb-4 text-neutral-content ">Voltage Drop Calculator</h3>
           <div className="divider mb-10"></div>
           <div className="flex gap-10  flex-wrap justify-left">
             <div >
@@ -170,12 +150,18 @@ export default function VoltageDrop(): JSX.Element {
         onToggle={() => setEnabled(x => !x)} 
         enabled={enabled}
       />
-      <Card className="col-span-full results-card xl:max-w-none">
-        <h3 className="text-xl font-bold mb-4">Results</h3>
-        {result}
-      </Card>
-
-
+      
+      <Results 
+        inputs={{
+          amps,
+          volts,
+          length,
+          percentageDrop,
+          phase,
+          wiringMethod,
+          material
+      }}
+      />
     </main>
   )
 }     

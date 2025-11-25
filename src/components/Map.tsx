@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { useSearchParams } from "react-router-dom";
 function RouteOverlay({ polyline, setPolyline }: {
   polyline: google.maps.Polyline | null;
-  setPolyline: (polyline: google.maps.Polyline | null) => void; 
+  setPolyline: (polyline: google.maps.Polyline | null) => void;
 }) {
   const map = useMap();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -195,12 +195,12 @@ export default function MapComponent({ enabled, onToggle }:
         <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}>
           <div
             className={
-              clsx("w-full min-h-[300px]  md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl", 
-              {
-              "opacity-20 pointer-events-none": !enabled
-            })}>
-            <Map
+              clsx("w-full min-h-[300px]  md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl",
+                {
+                  "opacity-20 pointer-events-none": !enabled
+                })}>
 
+            <Map
               style={{ width: "100%", height: "100%" }}
               defaultCenter={{ lat: 43.6532, lng: -79.3832 }}
               defaultZoom={18}
@@ -209,7 +209,6 @@ export default function MapComponent({ enabled, onToggle }:
               gestureHandling="greedy"
 
               {...options}
-
             >
               <MapControl position={ControlPosition.BOTTOM_CENTER}>
                 <button
