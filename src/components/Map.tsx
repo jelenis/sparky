@@ -6,7 +6,7 @@ import { useMap } from "@vis.gl/react-google-maps";
 import Card from "./Card";
 import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
-import { useSearchParams } from "react-router-dom";
+import { ServerRouter, useSearchParams } from "react-router-dom";
 function RouteOverlay({ polyline, setPolyline }: {
   polyline: google.maps.Polyline | null;
   setPolyline: (polyline: google.maps.Polyline | null) => void;
@@ -116,25 +116,40 @@ function RouteOverlay({ polyline, setPolyline }: {
   return null;
 }
 
-function GeocodingComponent({ query }: { query: string }) {
-  const geocodingLib = useMapsLibrary("geocoding");
+function TextSearchComponent({ query }: { query: string }) {
   const map = useMap();
 
   useEffect(() => {
-    if (!geocodingLib || !map || !query) return;
-
-    const geocoder = new geocodingLib.Geocoder();
-    geocoder.geocode({ address: query }, (results, status) => {
-      if (status === 'OK' && results && results[0]) {
-        const location = results[0].geometry.location;
-        map.setCenter(location);
-        map.setZoom(18);
-
-      } else {
-
-      }
-    });
-  }, [geocodingLib, map, query]);
+    if (!map || !query) return;
+    
+    // use the places api to search for the location
+    // this is more robust than geocoding alone
+    fetch(`https://places.googleapis.com/v1/places:searchText`,{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': import.meta.env.VITE_GOOGLE_MAPS_KEY,
+          'X-Goog-FieldMask': 'places.formatted_address,places.location',
+        },
+        body: JSON.stringify({
+          "textQuery": query,
+        }),
+      })
+      .then(res => res.json())
+      .then(data => { 
+          const { places } = data;
+          console.log("Search places:", places);
+          const location = places[0]?.location;
+          if (!location) return;
+          // they have a differnt nameing convention
+          // in the places api
+          map.setCenter({ lat: location.latitude, lng: location.longitude });
+          map.setZoom(18);
+      }).catch(err => { 
+        console.error("Query error:", err);
+      });
+    
+  }, [map, query]);
 
   return null;
 }
@@ -224,7 +239,7 @@ export default function MapComponent({ enabled, onToggle }:
                 polyline={polyline}
                 setPolyline={setPolyline}
               />}
-              <GeocodingComponent query={searchQuery} />
+              <TextSearchComponent query={searchQuery} />
             </Map>
           </div>
         </APIProvider>

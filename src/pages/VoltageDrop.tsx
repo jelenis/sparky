@@ -110,11 +110,7 @@ export default function VoltageDrop(): JSX.Element {
                
                 <span className="label">%</span>
               </label>
-
-
             </div>
-
-
 
             <div >
               <label className="block mb-1 font-medium" htmlFor="phase">Phase:</label>
