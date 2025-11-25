@@ -71,11 +71,15 @@ function RouteOverlay({ polyline, setPolyline }: {
     };
 
     const updatePathAndDistance = () => {
+      console.log("Path updated");
       const pathArray = getPathArray(path);
       const distance = google.maps.geometry.spherical.computeLength(path);
       updateUrlWithPath(pathArray, distance);
     };
 
+    console.log("Setting up polyline listeners");
+    const addListener = path.addListener("insert_at", updatePathAndDistance);
+    const setListener = path.addListener("set_at", updatePathAndDistance);
     const removeListener = path.addListener("remove_at", deletePathAndDistance);
 
     const listener = map.addListener("click", (e: google.maps.MapMouseEvent) => {
@@ -103,6 +107,8 @@ function RouteOverlay({ polyline, setPolyline }: {
       rightClickListener.remove();
       map.getDiv().removeEventListener("keyup", escapeHandler);
       google.maps.event.removeListener(removeListener);
+      google.maps.event.removeListener(addListener);
+      google.maps.event.removeListener(setListener);
     };
   }, [map, polyline, setSearchParams, updateUrlWithPath, getPathArray]);
 
@@ -157,21 +163,15 @@ export default function MapComponent({ enabled, onToggle }:
   }, []);
 
 
-  // you have to manually enable/disable map options
-  // since it remebers its state even
-  const options = enabled ? {
-    draggable: true,
-    zoomControl: true,
-    scrollwheel: true,
-    disableDoubleClickZoom: false,
-    disableDefaultUI: false,
 
-  } : {
-    draggable: false,
-    zoomControl: false,
-    scrollwheel: false,
+  const options = {
+    draggable: enabled,
+    zoomControl: enabled,
+    scrollwheel: enabled,
+    rotateControl: false,
+    cameraControl: false,
     disableDoubleClickZoom: true,
-    disableDefaultUI: true,
+    fullscreenControl: true,
   };
 
   return (
@@ -205,7 +205,7 @@ export default function MapComponent({ enabled, onToggle }:
               defaultCenter={{ lat: 43.6532, lng: -79.3832 }}
               defaultZoom={18}
               clickableIcons={false}
-              mapTypeId="satellite"
+              mapTypeId="hybrid"
               gestureHandling="greedy"
 
               {...options}
@@ -214,8 +214,7 @@ export default function MapComponent({ enabled, onToggle }:
                 <button
                   onClick={clearPolyline}
                   id="clear-polyline-button"
-                  className="bg-white text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
-                  style={{ color: "black", }}
+                  className=" bg-white text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
                 >
                   <FaTrash className=" text-input" />
                   Clear Points
