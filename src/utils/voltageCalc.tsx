@@ -6,7 +6,7 @@ type phaseType = 1 | 3;
 type voltageType = number
 
 
-function generateK(
+export function generateK(
     voltageDrop: number,
     current: number,  
     length: number, 
