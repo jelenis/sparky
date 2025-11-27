@@ -1,8 +1,7 @@
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
-import { useEffect, useState, useCallback } from "react";
+import { Map, useMap } from "@vis.gl/react-google-maps";
+import { useEffect, useState, useCallback, use } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
-import { useMap } from "@vis.gl/react-google-maps";
 import Card from "./Card";
 import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
@@ -163,6 +162,10 @@ export default function MapComponent({ enabled, onToggle }:
   const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("Toronto, ON");
   const [isFull, setIsFull] = useState(false);
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: 43.6532, lng: -79.3832 });
+  const [zoom, setZoom] = useState<number>(12);
+  const map = useMap()
+
   const clearPolyline = useCallback(() => {
     if (polyline) {
       polyline.getPath().clear();
@@ -192,8 +195,23 @@ export default function MapComponent({ enabled, onToggle }:
     fullscreenControl: false,
   };
 
+  // this fires only once when the map loads
+  // since there is no map load event exposed, we
+  // listen for tilesloaded which only fires once 
+  useEffect(() => {
+    const tilesLoadedListener = map?.addListener("tilesloaded", () => {
+      tilesLoadedListener?.remove();
+      map.setZoom(zoom);
+    });
+
+    return () => {
+      tilesLoadedListener?.remove();
+    }
+  }, [map]);
+
+
   return (
-    <Card  style={{ width: "100%", height: "100%", }}>
+    <Card style={{ width: "100%", height: "100%", }}>
       <div className="flex flex-col h-full">
         <form action={handleAction} className="mb-8 sm:flex justify-between" >
           <div className="mb-5 sm:mb-0">
@@ -210,58 +228,72 @@ export default function MapComponent({ enabled, onToggle }:
             <button disabled={!enabled} type="submit" className="btn ml-2">Search</button>
           </div>
         </form>
+        <div
+          className={
+            clsx("w-full min-h-[300px]  md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl", 
+              !enabled ? "opacity-20 pointer-events-none": "")
+          }>
 
-        <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_KEY}>
-          <div
-            className={
-              clsx(" w-full min-h-[300px]  md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl",
-                {
-                  "opacity-20 pointer-events-none": !enabled
-                })}>
+          <FullScreenWrapper isFull={isFull} 
+          onExit={() => {
+            // capture zoom level on exit
+            setZoom(map?.getZoom() ?? zoom);
+            setIsFull(false);
+          }}>
+            <Map
 
+              style={{ width: "100%", height: "100%" }}
+              center={center}
+              clickableIcons={false}
+              defaultZoom={zoom}
+              mapTypeId="hybrid"
+              gestureHandling="greedy"
 
-            <FullScreenWrapper isFull={isFull} onExit={() => setIsFull(false)}>
-              <Map
-                className=""
-                style={{ width: "100%", height: "100%" }}
-                defaultCenter={{ lat: 43.6532, lng: -79.3832 }}
-                defaultZoom={18}
-                clickableIcons={false}
-                mapTypeId="hybrid"
-                gestureHandling="greedy"
+              onCenterChanged={e => setCenter(e.detail.center)}
+              // defaultBounds={bounds ? bounds : undefined}
+              onZoomChanged={e => {
 
-                {...options}
-              >
-                <MapControl  position={ControlPosition.BOTTOM_CENTER}>
+                // setZoom(e.detail.zoom);
+                // console.log("zoom changed:", e.detail.bounds, "ignoreCount:", ignoreCount);
+
+              }}
+
+              {...options}
+            >
+              <MapControl position={ControlPosition.BOTTOM_CENTER}>
+                <button
+                  onClick={clearPolyline}
+                  id="clear-polyline-button"
+                  className=" btn-map text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
+                >
+                  <FaTrash className=" text-input" />
+                  Clear Points
+                </button>
+              </MapControl>
+              <MapControl position={ControlPosition.TOP_RIGHT}>
+                {!isFull && (
                   <button
-                    onClick={clearPolyline}
-                    id="clear-polyline-button"
-                    className=" btn-map text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
+                    type="button"
+                    onClick={() => {
+                      // capture zoom level on enter
+                      setZoom(map?.getZoom() ?? zoom);
+                      setIsFull(true)
+                    }}
+                    className="btn-map btn text-gray-700 absolute right-3 top-3 "
                   >
-                    <FaTrash className=" text-input" />
-                    Clear Points
+                    ⤢ {/* TODO replace with react icon */}
                   </button>
-                </MapControl>
-                <MapControl position={ControlPosition.TOP_RIGHT}>
-                  {!isFull  && (
-                    <button
-                      type="button"
-                      onClick={() => setIsFull(true)}
-                      className="btn-map btn text-gray-700 absolute right-3 top-3 "
-                    >
-                      ⤢ {/* TODO replace with react icon */}
-                    </button>
-                  )}
-                </MapControl>
-                {enabled && <RouteOverlay
-                  polyline={polyline}
-                  setPolyline={setPolyline}
-                />}
-                <TextSearchComponent query={searchQuery} />
-              </Map>
-            </FullScreenWrapper>
-          </div>
-        </APIProvider>
+                )}
+              </MapControl>
+              {enabled && <RouteOverlay
+                polyline={polyline}
+                setPolyline={setPolyline}
+              />}
+              <TextSearchComponent query={searchQuery} />
+            </Map>
+          </FullScreenWrapper>
+        </div>
+
       </div>
     </Card>
   );

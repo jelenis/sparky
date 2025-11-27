@@ -10,6 +10,8 @@ type FullscreenWrapperProps = {
 export default function FullScreenWrapper({ isFull, onExit, children }: FullscreenWrapperProps) {
   const [el] = useState(() => document.createElement("div"));
 
+
+  // if fullscreen mode, mount to body
   useEffect(() => {
     if (!isFull) return;
 
