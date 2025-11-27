@@ -1,11 +1,11 @@
 import { Map, useMap } from "@vis.gl/react-google-maps";
-import { useEffect, useState, useCallback, use } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import Card from "./Card";
-import { MapControl, ControlPosition, useMapsLibrary, } from '@vis.gl/react-google-maps';
+import { MapControl, ControlPosition } from '@vis.gl/react-google-maps';
 import clsx from "clsx";
-import { ServerRouter, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import FullScreenWrapper from "./FullScreenWrapper";
 
 
