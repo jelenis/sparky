@@ -43,8 +43,7 @@ export default function Results({ inputs }: { inputs: ComputeProps }) {
   const displayContent = () => {
     if (calculationResult === "success") {
       return (
-        <div className="flex justify-center ">
-          <div className="stats mr-4">
+          <div className="stats flex justify-center">
             <div className="stat place-items-center">
               <div className="stat-title">Wire Size</div>
               <div className="stat-value">{wireSizeOutput}</div>
@@ -63,15 +62,14 @@ export default function Results({ inputs }: { inputs: ComputeProps }) {
               <div className="stat-desc">&nbsp;</div>
             </div>
           </div>
-        </div>
       );
     }
     
     if (calculationResult === "no-data") {
       return (
-        <div className="self-start">
+        <div className="self-center, text-center">
           <h3 className="text-error mb-4">Voltage drop too large</h3>
-          <p className="text-sm">No suitable wire exists.</p>
+          <p className="text-sm">No wire is large enough to handle the voltage drop.</p>
         </div>
       );
     }

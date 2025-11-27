@@ -5,10 +5,12 @@ import { useSearchParams } from "react-router-dom";
 import Card from "../components/Card";
 import Results from "../components/Results";
 import Map from "../components/Map.tsx";
+import Input from "../components/Input.tsx";
+import Select from "../components/Select.tsx";
 
 export default function VoltageDrop(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [enabled, setEnabled] =  useState<boolean>(false);
+  const [enabled, setEnabled] = useState<boolean>(false);
   const ampStr = searchParams.get("amps") ?? "";
   const voltStr = searchParams.get("volts") ?? "";
   const lengthStr = searchParams.get("length") ?? "";
@@ -39,17 +41,17 @@ export default function VoltageDrop(): JSX.Element {
     isNaN(percentageDrop) && updateSearchParams("percentage_drop", "5");
   }, []);
 
-  
+
   function updateSearchParams(param: string, value: string) {
-  
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        if (value === "") 
-          next.delete(param);
-        else
-          next.set(param, value);
-        return next;
-      });
+
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (value === "")
+        next.delete(param);
+      else
+        next.set(param, value);
+      return next;
+    });
   }
 
 
@@ -59,95 +61,96 @@ export default function VoltageDrop(): JSX.Element {
         <div className="max-w-[600px] ">
           <h3 className="text-2xl font-bold mb-4 text-neutral-content ">Voltage Drop Calculator</h3>
           <div className="divider mb-10"></div>
+
+          {/***********  Input parameters and selection boxes **********/}
           <div className="flex gap-10  flex-wrap justify-left">
-            <div >
-              <h4 className="pb-2">Supply Voltage</h4>
-              <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="w-full" autoComplete="off" name="volts" value={voltStr}
-                  placeholder="600"
-                  onChange={e => updateSearchParams("volts", e.target.value)} />
-                <span className="label">Volts</span>
-              </label>
-            </div>
-            <div>
 
-              <h4 className="pb-2">Load Current</h4>
-              <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="w-full"autoComplete="off" name="current" value={ampStr}
-                  placeholder="20"
-                  onChange={e => updateSearchParams("amps", e.target.value)} />
-                  <span className="label">Amps</span>
-              </label>
+            <Input
+              heading="Supply Voltage"
+              label="Volts"
+              name="volts"
+              value={voltStr}
+              placeholder="600"
+              hint="Voltage be greater than 0"
+              onChange={e => updateSearchParams("volts", e.target.value)} />
 
+            <Input
+              heading="Load Current"
+              label="Amps"
+              name="current"
+              value={ampStr}
+              placeholder="20"
+              hint="Current be greater than 0"
+              onChange={e => updateSearchParams("amps", e.target.value)} />
 
-            </div>
-            <div>
-              <h4 className="pb-2">Length</h4>
-              <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="w-full" disabled={enabled} autoComplete="off" name="length" value={lengthStr}
-                  placeholder="100"
-                  onChange={e => {
-                    setSearchParams(prev => {
-                      const next = new URLSearchParams(prev);
-                      next.delete("path");
-                      next.set("length", e.target.value);
-                      return next;
-                    });
-                  }} />
-                <span className="label">Meters</span>
-              </label>
+            <Input
+              heading="Length"
+              label="Meters"
+              name="length"
+              value={lengthStr}
+              placeholder="100"
+              onChange={e => {
+                setSearchParams(prev => {
+                  const next = new URLSearchParams(prev);
+                  next.delete("path");
+                  next.set("length", e.target.value);
+                  return next;
+                });
+              }} />
 
+            <Input
+              heading="Voltage Drop"
+              label="%"
+              name="percentage-drop"
+              value={percentageDropStr}
+              placeholder="5"
+              hint="Percentage be greater than 0"
+              onChange={e => updateSearchParams("percentage_drop", e.target.value)} />
 
-            </div>
-
-            <div >
-
-              <h4 className="pb-2">Voltage Drop</h4>
-              <label className=" number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
-                <input className="w-full" autoComplete="off" name="percentage-drop"
-                  placeholder="5"
-                  value={percentageDropStr} onChange={e => updateSearchParams("percentage_drop", e.target.value)} />
-               
-                <span className="label">%</span>
-              </label>
-            </div>
-
-            <div >
-              <label className="block mb-1 font-medium" htmlFor="phase">Phase:</label>
-              <select id="phase" defaultValue={phaseStr}
-                className={"select  select-ghost focus:border-0 hover:border-0 bg-input min-w-[100px] "}
-                onChange={(e) => updateSearchParams("phase", e.target.value)}>
-                <option className="hover:bg-input" value="1">1</option>
-                <option className="hover:bg-input" value="3">3</option>
-              </select>
-            </div>
-            <div >
-              <label className="block mb-1 font-medium" htmlFor="material">Material:</label>
-              <select id="material" defaultValue={materialStr}
-                className={"select  select-ghost focus:border-0 hover:border-0 bg-input min-w-[140px] "}
-                onChange={(e) => updateSearchParams("material", e.target.value)}>
-                <option className="hover:bg-input" value="copper">Copper</option>
-                <option className="hover:bg-input" value="aluminum">Aluminum</option>
-              </select>
-            </div>
-            <div >
-              <label className="block mb-1 font-medium" htmlFor="wiring-method">Wiring Method:</label>
-              <select id="wiring-method" defaultValue={wiringMethodStr}
-                className={"select  select-ghost focus:border-0 hover:border-0 bg-input min-w-[140px] "}
-                onChange={(e) => updateSearchParams("wiring_method", e.target.value)}>
-                <option className="hover:bg-input" value="raceway">Raceway</option>
-                <option className="hover:bg-input" value="cable">Cable</option>
-              </select>
-            </div>
+            <Select
+              heading="Phase"
+              name="phase"
+              value={phaseStr}
+              options={[
+                { value: "1", label: "1" },
+                { value: "3", label: "3" }
+              ]}
+              onChange={(e) => updateSearchParams("phase", e.target.value)}
+              className="min-w-[120px]"
+            />
+            
+            <Select
+              heading="Material"
+              name="material"
+              value={materialStr}
+              options={[
+                { value: "copper", label: "Copper" },
+                { value: "aluminum", label: "Aluminum" }
+              ]}
+              onChange={(e) => updateSearchParams("material", e.target.value)}
+              className="min-w-[140px]"
+            />
+            
+            <Select
+              heading="Wiring Method"
+              name="wiring-method"
+              value={wiringMethodStr}
+              options={[
+                { value: "raceway", label: "Raceway" },
+                { value: "cable", label: "Cable" }
+              ]}
+              onChange={(e) => updateSearchParams("wiring_method", e.target.value)}
+              className="min-w-[140px]"
+            />
           </div>
         </div>
       </Card>
-      <Map 
-        onToggle={() => setEnabled(x => !x)} 
+      <Map
+        onToggle={() => setEnabled(x => !x)}
         enabled={enabled}
       />
-      
-      <Results 
+
+      <Results
         inputs={{
           amps,
           volts,
@@ -156,7 +159,7 @@ export default function VoltageDrop(): JSX.Element {
           phase,
           wiringMethod,
           material
-      }}
+        }}
       />
     </main>
   )

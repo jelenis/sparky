@@ -86,3 +86,9 @@ textarea:focus, input:focus{
 .btn-map {
   background-color: white;
 }
+
+.fieldset  label.input:has(:invalid) ~ .validator-hint  {
+  color: var(--color-error);
+  visibility: visible;
+
+}
