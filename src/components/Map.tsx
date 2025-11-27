@@ -164,7 +164,9 @@ export default function MapComponent({ enabled, onToggle }:
   const [isFull, setIsFull] = useState(false);
   const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: 43.6532, lng: -79.3832 });
   const [zoom, setZoom] = useState<number>(12);
+  const [isResizing, setIsResizing] = useState(true);
   const map = useMap()
+
 
   const clearPolyline = useCallback(() => {
     if (polyline) {
@@ -202,6 +204,7 @@ export default function MapComponent({ enabled, onToggle }:
     const tilesLoadedListener = map?.addListener("tilesloaded", () => {
       tilesLoadedListener?.remove();
       map.setZoom(zoom);
+      setIsResizing(false);
     });
 
     return () => {
@@ -209,9 +212,12 @@ export default function MapComponent({ enabled, onToggle }:
     }
   }, [map]);
 
+  console.log("resizing:", isResizing);
+
+
 
   return (
-    <Card style={{ width: "100%", height: "100%", }}>
+    <Card style={{ width: "100%", height: "100%" }} >
       <div className="flex flex-col h-full">
         <form action={handleAction} className="mb-8 sm:flex justify-between" >
           <div className="mb-5 sm:mb-0">
@@ -238,34 +244,30 @@ export default function MapComponent({ enabled, onToggle }:
           onExit={() => {
             // capture zoom level on exit
             setZoom(map?.getZoom() ?? zoom);
+            setIsResizing(true);
             setIsFull(false);
           }}>
-            <Map
+            {isResizing && 
+              <div className="flex h-full justify-center items-center">
+                <span className="text-4xl skeleton skeleton-text">Loading Google Maps...</span>
+              </div>}
 
-              style={{ width: "100%", height: "100%" }}
+
+               <Map
+              style={{ width: "100%", height: "100%", opacity: isResizing ? 0 : 1 }}
               center={center}
               clickableIcons={false}
               defaultZoom={zoom}
               mapTypeId="hybrid"
               gestureHandling="greedy"
-
               onCenterChanged={e => setCenter(e.detail.center)}
-              // defaultBounds={bounds ? bounds : undefined}
-              onZoomChanged={e => {
-
-                // setZoom(e.detail.zoom);
-                // console.log("zoom changed:", e.detail.bounds, "ignoreCount:", ignoreCount);
-
-              }}
-
               {...options}
             >
               <MapControl position={ControlPosition.BOTTOM_CENTER}>
                 <button
                   onClick={clearPolyline}
                   id="clear-polyline-button"
-                  className=" btn-map text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10"
-                >
+                  className=" btn-map text-gray-700 h-12 w-auto flex items-center justify-center btn rounded shadow mb-10">
                   <FaTrash className=" text-input" />
                   Clear Points
                 </button>
@@ -277,10 +279,10 @@ export default function MapComponent({ enabled, onToggle }:
                     onClick={() => {
                       // capture zoom level on enter
                       setZoom(map?.getZoom() ?? zoom);
+                      setIsResizing(true);
                       setIsFull(true)
                     }}
-                    className="btn-map btn text-gray-700 absolute right-3 top-3 "
-                  >
+                    className="btn-map btn text-gray-700 absolute right-3 top-3 " >
                     ⤢ {/* TODO replace with react icon */}
                   </button>
                 )}
@@ -293,7 +295,6 @@ export default function MapComponent({ enabled, onToggle }:
             </Map>
           </FullScreenWrapper>
         </div>
-
       </div>
     </Card>
   );

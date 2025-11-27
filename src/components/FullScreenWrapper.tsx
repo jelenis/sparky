@@ -28,7 +28,7 @@ export default function FullScreenWrapper({ isFull, onExit, children }: Fullscre
   if (!isFull) {
     // normal, inline layout
     return (
-      <div className="relative h-72 w-full rounded-xl overflow-hidden bg-base-200">
+      <div className="relative w-full h-full rounded-xl overflow-hidden ">
         {children}
       </div>
     );
