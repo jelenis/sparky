@@ -1,5 +1,6 @@
 import Card from "./Card";
 import { getWireSize, voltageDropFromK } from "../utils/voltageCalc";
+import { BiSolidError } from "react-icons/bi";
 
 interface ComputeProps {
   amps: number;
@@ -68,14 +69,20 @@ export default function Results({ inputs }: { inputs: ComputeProps }) {
     if (calculationResult === "no-data") {
       return (
         <div className="self-center, text-center">
-          <h3 className="text-error mb-4">Voltage drop too large</h3>
-          <p className="text-sm">No wire is large enough to handle the voltage drop.</p>
+          <h3 className="text-error mb-4 font-bold"><BiSolidError className="text-error inline mb-1 mr-2 h-8 w-8" />Voltage drop too large</h3>
+          <p className="text-sm max-w-[40%] m-auto">No wire is large enough to handle the voltage drop. Try reducing the percentage drop or the length of the run.</p>
+
         </div>
       );
     }
     
     // invalid inputs
-    return null
+    return (
+      <p className="text-gray-600 text-center">
+        Please enter all inputs to see results
+        <span className=" block  mx-auto my-5 loading loading-ring loading-xl"></span>
+      </p>
+    )
   };
 
   return (

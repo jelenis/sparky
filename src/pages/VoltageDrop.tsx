@@ -56,7 +56,7 @@ export default function VoltageDrop(): JSX.Element {
 
 
   return (
-    <main className="grid xl:grid-cols-2 lg:grid-cols-1 gap-4 p-8 lg:justify-items-center max-w-[1500px] mx-auto">
+    <main className="grid xl:grid-cols-2  justify-items-center lg:grid-cols-1 gap-4 p-8 lg:justify-items-center max-w-[1500px] mx-auto">
       <Card className="">
         <div className="max-w-[600px] ">
           <h3 className="text-2xl font-bold mb-4 text-neutral-content ">Voltage Drop Calculator</h3>
