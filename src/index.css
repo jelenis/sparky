@@ -68,8 +68,10 @@ textarea:focus, input:focus{
 .card {
   transition: background-color 0.2s ease;
 }
+
+/* override  default background colors, 
+and apply when input is selected on card */
 .card:has(:focus-within), .card:hover {
-  /* background-color: var(--color-dark); */
   background-color: var(--color-selected);
 }
 .btn {
@@ -92,3 +94,25 @@ textarea:focus, input:focus{
   visibility: visible;
 
 }
+
+@theme {
+  --animate-wiggle: wiggle 0.1s ease-in-out infinite;
+  @keyframes wiggle {
+  0% {
+    transform: rotate(-7deg);
+  }
+  
+  33% {
+    transform: rotate(7deg);
+  }
+  
+  66% {
+    transform: rotate(-7deg);
+  }
+}
+}
+
+/* if the main title is hovered, wiggle the bolt icon */
+h1:has(.bolt-icon):hover .bolt-icon {
+  animation: wiggle 0.35s ease-in-out;
+} 

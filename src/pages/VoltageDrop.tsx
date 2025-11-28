@@ -7,7 +7,7 @@ import Results from "../components/Results";
 import Map from "../components/Map.tsx";
 import Input from "../components/Input.tsx";
 import Select from "../components/Select.tsx";
-import clsx from "clsx";
+
 
 const DEFAULT_MAP_ENABLED = true;
 
