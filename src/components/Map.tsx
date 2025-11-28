@@ -73,6 +73,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
 
     const tilesLoadedListener = map.addListener("tilesloaded", () => {
       tilesLoadedListener?.remove();
+      map.setCenter(center);
       map.setZoom(zoom);
       setIsResizing(false);
     });
@@ -145,7 +146,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
                 height: "100%", 
                 opacity: isResizing ? 0 : 1 
               }}
-              center={center}
+             
               clickableIcons={false}
               defaultZoom={zoom}
               mapTypeId="hybrid"
