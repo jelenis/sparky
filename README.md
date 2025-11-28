@@ -1,53 +1,108 @@
-# React + TypeScript + Vite
+# Sparky ⚡
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A voltage drop calculator for electrical installations, built with React, TypeScript, and Google Maps integration. Currently focused on voltage drop calculations for electrical circuit design, with plans for additional electrical engineering tools in future releases.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🔌 Voltage Drop Calculator
+- **Wire size determination** based on voltage drop limits for branch circuits
+- **Multiple conductor materials** - Copper and Aluminum with accurate resistance values
+- **Installation method considerations** - Raceway and Cable configurations
+- **Single and three-phase** power system support
+- **Real-time calculations** showing recommended wire sizes and actual voltage drop percentages
 
-## React Compiler
+### 🗺️ Interactive Map Integration
+- **Distance measurement** using Google Maps polyline drawing with precise geodesic calculations
+- **Location search** powered by Google Places API for accurate address lookup
+- **Fullscreen map mode** for detailed route planning and measurement
+- **URL state persistence** - Share complete calculations including map polylines via URL
+- **Touch-optimized controls** for mobile and tablet usage
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### 🎯 User Experience
+- **Responsive design** optimized for desktop, tablet, and mobile workflows
+- **Real-time calculations** with instant feedback as parameters change
+- **Input validation** with electrical standard range checking and error messaging
+- **Modern component-based UI** using DaisyUI design system
 
-Note: This will impact Vite dev & build performances.
+## Technology Features
 
-## Expanding the ESLint configuration
+### Frontend Architecture
+- **React 18** with TypeScript for type-safe component development
+- **Modern hooks-based architecture** with extracted, reusable components
+- **Component extraction** including Results, Map, Input, and Select components for maintainability
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Mapping & Geolocation
+- **@vis.gl/react-google-maps** - Modern Google Maps React library with performance optimizations
+- **Google Places API integration** for intelligent location search and autocomplete
+- **Polyline drawing tools** with geodesic distance calculation for accurate wire run measurements
+- **Map state management** with URL parameter encoding for shareable calculations
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### State Management & Persistence
+- **React Router** with useSearchParams for URL-based state persistence
+- **JSON-encoded URL parameters** allowing complete application state sharing
+- **Atomic state updates** preventing stale closure issues in React components
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Styling & UI Framework
+- **DaisyUI + Tailwind CSS** for consistent, accessible component styling
+- **Mobile-first responsive design** with touch-optimized form controls
+- **Modern CSS Grid and Flexbox** layouts for complex component arrangements
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Testing & Development
+- **Vite** for fast development server and optimized production builds
+- **Vitest** for unit testing electrical calculation utilities
+- **TypeScript strict mode** for compile-time error prevention
+- **ESLint configuration** with React and TypeScript rule sets
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jelenis/sparky.git
+   cd sparky
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   # Copy the example environment file
+   cp .env.example .env
+   
+   # Add your Google Maps API key
+   VITE_GOOGLE_MAPS_KEY=your_api_key_here
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Run tests**
+   ```bash
+   npm run test
+   ```
+
+## Future Development 🚀
+
+Additional electrical calculation tools may be added in future releases, depending on development priorities and user feedback:
+
+- **Conduit Fill Calculator** - Wire capacity calculations for various conduit types
+- **Branch Circuit Load Calculator** - Residential and light commercial load calculations
+- **Wire Ampacity Calculator** - Temperature and bundling correction factors
+- **Electrical Panel Schedule Generator** - Circuit layout and load distribution tools
+
+*Note: This application currently focuses specifically on voltage drop calculations. Additional features will be evaluated based on user needs and development resources.*
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 // eslint.config.js
 import reactX from 'eslint-plugin-react-x'
 import reactDom from 'eslint-plugin-react-dom'
