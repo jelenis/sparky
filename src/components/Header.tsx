@@ -7,15 +7,15 @@ export default function Header() {
     <>
       <header className="shadow p-4 mb-2 border-b-2 border-background bg-dark flex flex-col sm:flex-row sm:justify-between items-center gap-4">
         {/* Website Title */}
-        <h1 className="text-3xl font-bold text-white hover:text-neutral-300 whitespace-nowrap shrink-0">
+        <h1 className="text-3xl ml-8 font-bold text-white hover:text-neutral-300 whitespace-nowrap shrink-0">
           <a href="/">
-            Electrician Toolkit
+            Sparky
           </a>
           <FaBolt className="bolt-icon ml-4 inline h-[1em]" />
         </h1>
 
         {/* Navigation Links */}
-        <nav className="flex items-center gap-4 text-white shrink-0">
+        <nav className="flex items-center gap-4 text-white shrink-0 mr-2">
           {/* GitHub Link */}
           <a 
             className="hover:text-neutral-300 whitespace-nowrap" 
