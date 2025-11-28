@@ -35,7 +35,7 @@ export default function VoltageDrop(): JSX.Element {
   const wiringMethod = wiringMethodStr === "cable" ? "cable" : "raceway";
   const material = materialStr === "aluminum" ? "aluminum" : "copper";
 
-  // set defaults if not present when the cmoponent mounts
+  // when the component mounts, set the defaults if they are not present 
   useEffect(() => {
     return; // disable auto defaults for now
     isNaN(volts) && updateSearchParams("volts", "120");
@@ -56,7 +56,6 @@ export default function VoltageDrop(): JSX.Element {
       return next;
     });
   }
-
 
   return (
     <main className="grid xl:grid-cols-2  justify-items-center lg:grid-cols-1 gap-4 p-8 lg:justify-items-center max-w-[1500px] mx-auto">

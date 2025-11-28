@@ -110,7 +110,10 @@ export default function MapPolylineOverlay({ polyline, setPolyline }: MapPolylin
       google.maps.event.removeListener(addListener);
       google.maps.event.removeListener(setListener);
     };
-  }, [map, polyline]);
+
+  // set searchParams must be in dependency array to avoid stale closure
+  // else the old searchParams (when page loads) will be used
+  }, [map, polyline, setSearchParams]);
 
   return null;
 }
