@@ -1,5 +1,7 @@
 import { Outlet } from "react-router";
-import { FaBolt, FaGithub } from "react-icons/fa";
+import { FaBolt, FaGithub} from "react-icons/fa";
+import { ImProfile } from "react-icons/im";
+
 export default function Header() {
   return ( 
     <>
@@ -8,7 +10,11 @@ export default function Header() {
       <nav className="flex sm:justify-end  items-center gap-4  justify-evenly flex-wrap text-white">
         <a className=" hover:text-gray-300" href="https://github.com/jelenis/sparky">View on GitHub<FaGithub className="inline mb-1 ml-3 h-8 w-8" /></a>
         <div className="divider"></div>
-        <a className=" hover:text-gray-300" href="https://johnelenis.ca">My Website</a>
+
+        <div className="divider"></div>
+        <a className=" hover:text-gray-300" href="https://johnelenis.ca">
+          My Personal Website<ImProfile className="inline mb-1 ml-3 h-8 w-8" />
+        </a>
       </nav>
     </header>
       <Outlet />

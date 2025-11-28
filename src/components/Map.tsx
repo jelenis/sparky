@@ -9,6 +9,10 @@ import FullScreenWrapper from "./FullScreenWrapper";
 import MapPolylineOverlay from "./MapPolylineOverlay";
 import MapLocationSearch from "./MapLocationSearch";
 
+const DEFAULT_CENTER = { lat: 43.6532, lng: -79.3832 }; // Toronto, ON
+const DEFAULT_ZOOM = 18;
+const DEFAULT_SEARCH_QUERY = "Toronto, ON";
+
 interface MapComponentProps {
   enabled: boolean;
   onToggle: () => void;
@@ -21,10 +25,10 @@ interface MapComponentProps {
 export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
   // Component state
   const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("Toronto, ON");
+  const [searchQuery, setSearchQuery] = useState<string>(DEFAULT_SEARCH_QUERY);
   const [isFull, setIsFull] = useState(false);
-  const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: 43.6532, lng: -79.3832 });
-  const [zoom, setZoom] = useState<number>(12);
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>(DEFAULT_CENTER);
+  const [zoom, setZoom] = useState<number>(DEFAULT_ZOOM);
   const [isResizing, setIsResizing] = useState(true);
   const map = useMap();
 
@@ -102,7 +106,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
                 disabled={!enabled} 
                 name="query" 
                 className="input" 
-                placeholder="Toronto, ON" 
+                placeholder={DEFAULT_SEARCH_QUERY}
               />
             </label>
             <button disabled={!enabled} type="submit" className="btn ml-2">

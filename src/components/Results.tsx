@@ -71,7 +71,6 @@ export default function Results({ inputs }: { inputs: ComputeProps }) {
         <div className="self-center, text-center">
           <h3 className="text-error mb-4 font-bold"><BiSolidError className="text-error inline mb-1 mr-2 h-8 w-8" />Voltage drop too large</h3>
           <p className="text-sm max-w-[40%] m-auto">No wire is large enough to handle the voltage drop. Try reducing the percentage drop or the length of the run.</p>
-
         </div>
       );
     }

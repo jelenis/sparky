@@ -1,5 +1,6 @@
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label: string;
+    enabled?: boolean;
     heading?: string;
     hint?: string;
     className?: string;

@@ -7,10 +7,13 @@ import Results from "../components/Results";
 import Map from "../components/Map.tsx";
 import Input from "../components/Input.tsx";
 import Select from "../components/Select.tsx";
+import clsx from "clsx";
+
+const DEFAULT_MAP_ENABLED = true;
 
 export default function VoltageDrop(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [enabled, setEnabled] = useState<boolean>(false);
+  const [mapEnabled, setMapEnabled] = useState<boolean>(DEFAULT_MAP_ENABLED);
   const ampStr = searchParams.get("amps") ?? "";
   const voltStr = searchParams.get("volts") ?? "";
   const lengthStr = searchParams.get("length") ?? "";
@@ -63,7 +66,7 @@ export default function VoltageDrop(): JSX.Element {
           <div className="divider mb-10"></div>
 
           {/***********  Input parameters and selection boxes **********/}
-          <div className="flex gap-10  flex-wrap justify-left">
+            <div className="flex gap-10  flex-wrap justify-left">
 
             <Input
               heading="Supply Voltage"
@@ -71,7 +74,7 @@ export default function VoltageDrop(): JSX.Element {
               name="volts"
               value={voltStr}
               placeholder="600"
-              hint="Voltage be greater than 0"
+              hint="Voltage must be greater than 0"
               onChange={e => updateSearchParams("volts", e.target.value)} />
 
             <Input
@@ -80,7 +83,7 @@ export default function VoltageDrop(): JSX.Element {
               name="current"
               value={ampStr}
               placeholder="20"
-              hint="Current be greater than 0"
+              hint="Current must be greater than 0"
               onChange={e => updateSearchParams("amps", e.target.value)} />
 
             <Input
@@ -88,14 +91,16 @@ export default function VoltageDrop(): JSX.Element {
               label="Meters"
               name="length"
               value={lengthStr}
+              disabled={mapEnabled}
               placeholder="100"
+              hint={!mapEnabled ? "Length must be greater than 0" : ""}
               onChange={e => {
-                setSearchParams(prev => {
-                  const next = new URLSearchParams(prev);
-                  next.delete("path");
-                  next.set("length", e.target.value);
-                  return next;
-                });
+              setSearchParams(prev => {
+                const next = new URLSearchParams(prev);
+                next.delete("path");
+                next.set("length", e.target.value);
+                return next;
+              });
               }} />
 
             <Input
@@ -104,7 +109,7 @@ export default function VoltageDrop(): JSX.Element {
               name="percentage-drop"
               value={percentageDropStr}
               placeholder="5"
-              hint="Percentage be greater than 0"
+              hint="Percentage must be greater than 0"
               onChange={e => updateSearchParams("percentage_drop", e.target.value)} />
 
             <Select
@@ -112,8 +117,8 @@ export default function VoltageDrop(): JSX.Element {
               name="phase"
               value={phaseStr}
               options={[
-                { value: "1", label: "1" },
-                { value: "3", label: "3" }
+              { value: "1", label: "1" },
+              { value: "3", label: "3" }
               ]}
               onChange={(e) => updateSearchParams("phase", e.target.value)}
               className="min-w-[120px]"
@@ -124,8 +129,8 @@ export default function VoltageDrop(): JSX.Element {
               name="material"
               value={materialStr}
               options={[
-                { value: "copper", label: "Copper" },
-                { value: "aluminum", label: "Aluminum" }
+              { value: "copper", label: "Copper" },
+              { value: "aluminum", label: "Aluminum" }
               ]}
               onChange={(e) => updateSearchParams("material", e.target.value)}
               className="min-w-[140px]"
@@ -136,18 +141,18 @@ export default function VoltageDrop(): JSX.Element {
               name="wiring-method"
               value={wiringMethodStr}
               options={[
-                { value: "raceway", label: "Raceway" },
-                { value: "cable", label: "Cable" }
+              { value: "raceway", label: "Raceway" },
+              { value: "cable", label: "Cable" }
               ]}
               onChange={(e) => updateSearchParams("wiring_method", e.target.value)}
               className="min-w-[140px]"
             />
-          </div>
+            </div>
         </div>
       </Card>
       <Map
-        onToggle={() => setEnabled(x => !x)}
-        enabled={enabled}
+        onToggle={() => setMapEnabled(x => !x)}
+        enabled={mapEnabled}
       />
 
       <Results

@@ -2,6 +2,10 @@
 
 A voltage drop calculator for electrical installations, built with React, TypeScript, and Google Maps integration. Currently focused on voltage drop calculations for electrical circuit design, with plans for additional electrical engineering tools in future releases.
 
+Calculations are based on practical electrical data and may differ from theoretical solutions. 
+
+**DISCLAIMER:** This software assumes no liability for incorrect results nor does it guarantee accuracy. Users are encouraged to consult a qualified professional electrician in all circumstances.
+
 ## Features
 
 ### 🔌 Voltage Drop Calculator
