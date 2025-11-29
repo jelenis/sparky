@@ -104,6 +104,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
             <label className="input label sm:max-w-60 max-w-3/4" htmlFor="query">
               <span className="label left"><CiSearch /></span>
               <input 
+                id="query"
                 disabled={!enabled} 
                 name="query" 
                 className="input" 
@@ -118,7 +119,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
 
         {/* Map container */}
         <div className={clsx(
-          "w-full min-h-[300px] md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl",
+          "w-full min-h-[300px] md:mx-auto md:w-[98%] md:h-[400px] overflow-hidden rounded-xl touch-none",
           !enabled && "opacity-20 pointer-events-none"
         )}>
           <FullScreenWrapper 
