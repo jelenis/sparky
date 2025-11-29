@@ -58,14 +58,14 @@ export default function VoltageDrop(): JSX.Element {
   }
 
   return (
-    <main className="grid xl:grid-cols-2  justify-items-center lg:grid-cols-1 gap-4 p-8 lg:justify-items-center max-w-[1500px] mx-auto">
-      <Card className="">
-        <div className="max-w-[600px] ">
+    <main className="grid  xl:grid-cols-2 justify-center lg:justify-items-normal   justify-items-center grid-cols-1 gap-4 p-8  max-w-[1500px] mx-auto">
+      <Card className="h-fit">
+        <div >
           <h3 className="text-2xl font-bold mb-4 text-neutral-content ">Voltage Drop Calculator</h3>
           <div className="divider mb-10"></div>
 
           {/***********  Input parameters and selection boxes **********/}
-            <div className="flex gap-10  flex-wrap justify-left">
+            <div className="flex gap-10 flex-wrap justify-left min-h-0">
 
             <Input
               heading="Supply Voltage"

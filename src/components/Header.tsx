@@ -5,9 +5,9 @@ import { ImProfile } from "react-icons/im";
 export default function Header() {
   return (
     <>
-      <header className="shadow p-4 mb-2 border-b-2 border-background bg-dark flex flex-col sm:flex-row sm:justify-between items-center gap-4">
+      <header className="shadow p-4 mb-0  border-b-2 border-background bg-dark flex flex-col sm:flex-row sm:justify-between items-center gap-4">
         {/* Website Title */}
-        <h1 className="text-3xl ml-8 font-bold text-white hover:text-neutral-300 whitespace-nowrap shrink-0">
+        <h1 className="text-3xl ml-8 mb-4 sm:mb-0 font-bold text-white hover:text-neutral-300 whitespace-nowrap shrink-0">
           <a href="/">
             Sparky
           </a>

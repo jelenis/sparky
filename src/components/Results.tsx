@@ -44,7 +44,7 @@ export default function Results({ inputs }: { inputs: ComputeProps }) {
   const displayContent = () => {
     if (calculationResult === "success") {
       return (
-          <div className="stats flex justify-center">
+          <div className="stats  md:flex  md:justify-center stats-vertical md:stats-horizontal block">
             <div className="stat place-items-center">
               <div className="stat-title">Wire Size</div>
               <div className="stat-value">{wireSizeOutput}</div>
@@ -85,7 +85,7 @@ export default function Results({ inputs }: { inputs: ComputeProps }) {
   };
 
   return (
-    <Card className="col-span-full results-card xl:max-w-none ">
+    <Card className="col-span-full results-card xl:max-w-none w-full">
       <h3 className="text-2xl font-bold text-center">Results</h3>
       <div className="divider mb-8"></div>
       {displayContent()}

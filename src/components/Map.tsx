@@ -84,7 +84,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
   }, [map, zoom]);
 
   return (
-    <Card style={{ width: "100%", height: "100%" }}>
+    <Card className="w-full h-full" >
       <div className="flex flex-col h-full">
         {/* Search form and controls */}
         <form action={handleAction} className="mb-8 sm:flex justify-between">
@@ -151,6 +151,7 @@ export default function MapComponent({ enabled, onToggle }: MapComponentProps) {
               clickableIcons={false}
               defaultZoom={zoom}
               mapTypeId="hybrid"
+              defaultCenter={center}
               gestureHandling="greedy"
               onCenterChanged={e => setCenter(e.detail.center)}
               {...options}

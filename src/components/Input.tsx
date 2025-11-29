@@ -12,7 +12,7 @@ export default function Input(
     return (
         <div>
             {heading && <h4 className="pb-2">{heading}</h4>}
-            <fieldset className="fieldset">
+            <fieldset className="fieldset w-full">
                 <label className="number input mb-1 font-medium w-full p-2 border rounded max-w-[25em]" >
                     <input pattern="[0-9.]*" min={1} minLength={1} className="validator w-full" autoComplete="off" {...props} />
                     <span className="label">{label}</span>
@@ -20,5 +20,5 @@ export default function Input(
                     <p className="validator-hint">{hint}</p>
             </fieldset>
         </div>
-);
+    )
 }
